@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import './App.css';
-import { FiSettings, FiPlus, FiLink, FiMic, FiChevronDown } from 'react-icons/fi';
+import { FiSettings, FiAlertCircle, FiCheckCircle, FiPlus, FiLink, FiMic, FiChevronDown, FiImage } from 'react-icons/fi';
 import { BsCheckLg } from 'react-icons/bs';
 import { Radio, Tooltip, Spin } from 'antd';
 import 'antd/dist/reset.css';
 import { useTicketStore } from './store/ticketStore';
+import { LoadingOutlined } from '@ant-design/icons';
+
 
 const heroVariants = {
   hidden: { opacity: 0, y: 60 },
@@ -29,8 +31,61 @@ function App() {
   const [selectedModel, setSelectedModel] = useState<keyof typeof AIagents>('Best');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [priority, setPriority] = useState<'P0' | 'P1' | 'P2'>('P1');
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [uploadErrorMessage, setUploadErrorMessage] = useState<string | null>(null);
+  const [extractedImageText, setExtractedImageText] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const handleImageTicket = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    // Update states for loading UI
+    setIsUploadingImage(true);
+    setUploadStatus('loading');
+    setUploadErrorMessage(null);
+    
+    const formData = new FormData();
+    formData.append('image', file);
+    
+    try {
+      // Use the new endpoint that only extracts text without processing
+      const response = await fetch('/extract-text-from-image', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      if (data.extractedText) {
+        // Store the extracted text in a separate state variable
+        setExtractedImageText(data.extractedText);
+        
+        // Mark upload as successful
+        setUploadStatus('success');
+        
+        setTimeout(() => {
+          setUploadStatus('idle');
+        }, 3000);
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      setUploadStatus('error');
+      setUploadErrorMessage(error instanceof Error ? error.message : 'Unknown error');
+      
+      setTimeout(() => {
+        setUploadStatus('idle');
+      }, 3000);
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
   
+  const antIcon = <LoadingOutlined style={{ fontSize: 16 }} spin />;
+
   // Get state and actions from the ticket store
   const { isLoading, error, ticketResponse, submitQuery, resetResponse } = useTicketStore();
 
@@ -69,19 +124,20 @@ function App() {
 
   const handleSearch = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
-    if (!query.trim()) return;
+    if (!query.trim() && !extractedImageText.trim()) return;
     
     setSubmitted(`[${priority}] ${query}`);
     
     // Reset previous response
     resetResponse();
     
-    // Submit the query to the backend
-    await submitQuery(query, priority, AIagents[selectedModel].name);
+    // Submit both the query and the extracted image text
+    await submitQuery(query, priority, AIagents[selectedModel].name, extractedImageText);
     
-    setQuery("");
+    // Clear the image text after submission
+    setExtractedImageText('');
   };
-
+  
   const toggleDropdown = () => setIsDropdownOpen(v => !v);
 
   const selectModel = (key: keyof typeof AIagents): void => {
@@ -114,9 +170,30 @@ function App() {
                 <button type="button" className="icon-btn" title="Settings">
                   <FiSettings />
                 </button>
-                <button type="button" className="icon-btn" title="Add feature">
-                  <FiPlus />
-                </button>
+                <button 
+                type="button" 
+                className={`icon-btn ${uploadStatus === 'success' ? 'success-icon' : uploadStatus === 'error' ? 'error-icon' : ''}`}
+                title={uploadStatus === 'error' ? uploadErrorMessage || 'Upload failed' : "Upload Image Ticket"}
+                onClick={() => document.getElementById('imageUpload')?.click()}
+                disabled={uploadStatus === 'loading'}
+                >
+                  {uploadStatus === 'loading' ? (
+                    <Spin indicator={antIcon} className="button-spinner" />
+                  ) : uploadStatus === 'success' ? (
+                  <FiCheckCircle />
+                ) : uploadStatus === 'error' ? (
+                   <FiAlertCircle />
+                  ) : (
+                  <FiImage />
+                  )}
+                  </button>
+                  <input
+                  id="imageUpload"
+                  type="file"
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  onChange={handleImageTicket}
+                  />
                 <button type="button" className="icon-btn" title="Attach link">
                   <FiLink />
                 </button>

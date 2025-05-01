@@ -5,6 +5,20 @@
   justify-content: center;
   align-items: center;
 }
+.icon-btn.success-icon {
+  color: #00b8a3; /* Teal blue color */
+}
+
+.icon-btn.error-icon {
+  color: #f5222d; /* Red color */
+}
+
+.button-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 
 .hero {
   background: rgba(255, 255, 255, 0.07);

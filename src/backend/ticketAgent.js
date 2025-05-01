@@ -148,14 +148,45 @@ async function getLlmAnswer(ticket, category, openai) {
   }
 }
 
-async function processTicket(ticket, openai) {
-  const priority = assessPriority(ticket);
-  const category = await categorize(ticket, openai);
+async function extractTextFromImage(imageBase64, openai) {
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o", // or gpt-4-vision-preview if still using that
+      messages: [
+        {
+          role: "user",
+          content: [
+            { type: "text", text: "Extract all text from this image. Return only the extracted text, formatted as it appears." },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:image/jpeg;base64,${imageBase64.replace(/^data:image\/\w+;base64,/, '')}`
+              }
+            }
+          ]
+        }
+      ],
+      max_tokens: 1000
+    });
+    return response.choices[0].message.content;
+  } catch (error) {
+    console.error("Error extracting text from image:", error);
+    return null;
+  }
+}
+
+async function processTicket(ticket, openai, imageText = '') {
+  const combinedText = imageText 
+    ? `User Query: ${ticket}\nImage Text: ${imageText}` 
+    : ticket;
+  
+  const priority = assessPriority(combinedText);
+  const category = await categorize(combinedText, openai);
   const specialist = routeSpecialist(category);
   const justification = getJustification(priority, category);
-  let answer = searchKb(category, ticket);
+  let answer = searchKb(category, combinedText);
   if (answer === "escalation needed") {
-    answer = await getLlmAnswer(ticket, category, openai);
+    answer = await getLlmAnswer(combinedText, category, openai);
   }
   return {
     assigned_priority: priority,
@@ -166,4 +197,4 @@ async function processTicket(ticket, openai) {
   };
 }
 
-module.exports = { processTicket };
+module.exports = { processTicket, extractTextFromImage };

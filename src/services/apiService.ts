@@ -13,20 +13,24 @@ export interface TicketResponse {
     'P2': 'High'
   };
   
-  export const submitTicket = async (query: string, priority: string, model: string): Promise<TicketResponse> => {
+  export const submitTicket = async (
+    query: string, 
+    priority: string, 
+    model: string, 
+    imageText: string = ''
+  ): Promise<TicketResponse> => {
     try {
-      console.log('Submitting ticket:', { query, priority, model }); // Debug log
-      
       const response = await fetch('/analyze', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ticket: query
-          // Backend only requires 'ticket' parameter
+          ticket: query,
+          imageText: imageText
         }),
       });
+      
       
       console.log('Response status:', response.status, response.statusText);
       

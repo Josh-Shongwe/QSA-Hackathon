@@ -6,7 +6,7 @@ interface TicketState {
   isLoading: boolean;
   error: string | null;
   ticketResponse: TicketResponse | null;
-  submitQuery: (query: string, priority: string, model: string) => Promise<void>;
+  submitQuery: (query: string, priority: string, model: string, extractedImageText?: string) => Promise<void>;
   resetResponse: () => void;
 }
 
@@ -15,11 +15,10 @@ export const useTicketStore = create<TicketState>((set) => ({
   error: null,
   ticketResponse: null,
   
-  submitQuery: async (query: string, priority: string, model: string): Promise<void> => {
+  submitQuery: async (query: string, priority: string, model: string, imageText: string = ''): Promise<void> => {
     set({ isLoading: true, error: null });
     try {
-      // The backend doesn't use priority or model, but we'll pass them anyway for future flexibility
-      const response: TicketResponse = await submitTicket(query, priority, model);
+      const response: TicketResponse = await submitTicket(query, priority, model, imageText);
       set({ ticketResponse: response, isLoading: false });
     } catch (error: unknown) {
       console.error('Submit query error:', error);
