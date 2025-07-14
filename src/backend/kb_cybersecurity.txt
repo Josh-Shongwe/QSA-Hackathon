@@ -15,3 +15,8 @@ A: Start by identifying the specific industry regulations applicable to your bus
 
 Q: How do we securely share files with external parties?
 A: Use enterprise-grade secure file sharing solutions like SharePoint external sharing, secure FTP, or specialized secure file transfer services. Configure expiration dates for shared links so they don't provide indefinite access. Set up password protection for sensitive files, sending the password through a different communication channel than the link. Enable audit logging to track who accesses shared files and when. Train users on secure sharing practices, emphasizing the risks of using unauthorized consumer file sharing services. Consider implementing Data Loss Prevention (DLP) policies to prevent unauthorized sharing of sensitive information.
+
+Q: How do I set up a SoC network in Azure? 
+A: **ESCALATION NEEDED**
+
+To set up a SoC (System on Chip) network in Azure, a human agent would need more specific details. Please provide information on the specific requirements or goals for the SoC network setup in Azure to offer tailored guidance.

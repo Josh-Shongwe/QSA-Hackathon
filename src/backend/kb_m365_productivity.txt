@@ -18,3 +18,6 @@ A: First, verify the API connection status between your CRM and email systems. C
 
 Q: How do I set up automatic email signatures for our company?
 A: The approach depends on your email platform. For Microsoft 365, administrators can implement organization-wide signatures using Exchange transport rules in the Exchange admin center. For individual setups in Outlook, go to File > Options > Mail > Signatures. For centralized management, consider third-party signature management tools that integrate with your email system. These tools can ensure consistent branding and provide dynamic content based on user departments or roles. Make sure to include all required legal disclaimers and contact information in your signature templates.
+
+Q: Assume the role of a consultant: how do I set up a Microsoft 365 Excel sheet to contain data labeling referencing
+A: To set up data labeling referencing in Microsoft 365 Excel, you can use cell comments. Simply right-click on the cell you want to label, then select "New Comment." Type your label in the comment box that appears. This allows you to provide additional information or context without cluttering the spreadsheet. Have you tried using cell comments for data labeling in Excel?

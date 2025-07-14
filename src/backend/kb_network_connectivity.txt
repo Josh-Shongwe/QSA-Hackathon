@@ -21,3 +21,14 @@ A: Review detailed billing reports from your cloud provider to identify specific
 
 Q: How do we migrate our on-premise server to the cloud?
 A: Begin with a thorough assessment of your current server specifications, workloads, and performance requirements. Identify all dependencies and integration points with other systems. Develop a migration strategy, deciding between lift-and-shift (rehosting) or refactoring approaches based on the application architecture. Create comprehensive backup and rollback plans before beginning the migration. Schedule the migration during a time window with minimal business impact. Thoroughly test all applications in the cloud environment before final cutover. After successful migration, update DNS records and access points to direct traffic to the cloud resources, while maintaining fallback options until stability is confirmed.
+
+Q: What is the fastest available internet
+A: ESCALATION NEEDED: To determine the fastest available internet in your area, we would need to know your location (city, state, country) to check the local internet service providers and their available speeds. Please provide your location details for further assistance.
+
+Q: What is the organizational flow of TCP IP and how packets are organzied with specific reference to buffering. 
+A: ESCALATION NEEDED: To provide a detailed explanation of the organizational flow of TCP/IP and how packets are organized with specific reference to buffering, we would need more context on your current network setup, the specific devices involved, and the type of buffering you are inquiring about (e.g., network buffer, router buffer, etc.). Please provide additional details for further assistance.
+
+Q: If a video buffers and I am using a general internet provider like Spectrum what is the phenomena occurring from an Internet Protocol perspective 
+A: When a video buffers on your device while using an internet provider like Spectrum, it indicates a delay in data transmission. This delay can occur due to network congestion, slow internet speeds, or connectivity issues. From an Internet Protocol perspective, buffering happens when the data packets carrying video content are not arriving at your device consistently or quickly enough, causing interruptions in playback. 
+
+To address video buffering, you can try troubleshooting steps such as checking your internet connection speed, restarting your router, or connecting to a different network to see if the issue persists. Have you tried any of these steps yet to improve video playback?

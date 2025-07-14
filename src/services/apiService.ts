@@ -32,7 +32,6 @@ export interface TicketResponse {
       });
       
       
-      console.log('Response status:', response.status, response.statusText);
       
       if (!response.ok) {
         const errorText = await response.text();
@@ -47,7 +46,6 @@ export interface TicketResponse {
       }
       
       const data = await response.json();
-      console.log('Response data:', data);
       return data;
     } catch (error) {
       console.error('API error:', error);

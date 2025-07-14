@@ -197,4 +197,69 @@ async function processTicket(ticket, openai, imageText = '') {
   };
 }
 
+// Appends a new Q&A pair to the appropriate KB file if not already present
+function appendToKb(category, question, answer) {
+  const kbFile = getKbFilename(category);
+  if (!kbFile) return;
+  const kbPath = path.join(__dirname, kbFile);
+  // Read current KB content
+  let kbContent = '';
+  if (fs.existsSync(kbPath)) {
+    kbContent = fs.readFileSync(kbPath, 'utf-8');
+    // Avoid duplicates
+    if (kbContent.includes(question) && kbContent.includes(answer)) {
+      return;
+    }
+  }
+  // Append in Q&A format
+  const entry = `\nQ: ${question}\nA: ${answer}\n`;
+  try {
+    fs.appendFileSync(kbPath, entry, 'utf-8');
+  } catch (err) {
+    console.error('[appendToKb] Error appending to KB file:', err);
+  }
+}
+
+
+// Updated processTicket to cache new LLM answers
+async function processTicket(ticket, openai, imageText = '') {
+  const combinedText = imageText 
+    ? `User Query: ${ticket}\nImage Text: ${imageText}` 
+    : ticket;
+  
+  const priority = assessPriority(combinedText);
+  const category = await categorize(combinedText, openai);
+  const specialist = routeSpecialist(category);
+  const justification = getJustification(priority, category);
+  let answer = searchKb(category, combinedText);
+  let usedLlm = false;
+ 
+  if (answer === "escalation needed") {
+    answer = await getLlmAnswer(combinedText, category, openai);
+    usedLlm = true;
+  }
+  // Only append if LLM was used, answer is not escalation needed or error, and category is valid
+  if (
+    usedLlm &&
+    answer &&
+    answer !== "escalation needed" &&
+    !answer.startsWith("[LLM error") &&
+    !answer.startsWith("[LLM unavailable") &&
+    category !== "TBD"
+  ) {
+    answer = answer.replace(/\*\*ESCALATION NEEDED\*\*/gi, '').trim();
+    answer = answer.replace(/\ESCALATION NEEDED:/gi, '').trim();
+
+    appendToKb(category, combinedText, answer);
+  }
+  return {
+    assigned_priority: priority,
+    assigned_category: category,
+    routed_to: specialist,
+    justification,
+    answer
+  };
+}
+
+
 module.exports = { processTicket, extractTextFromImage };

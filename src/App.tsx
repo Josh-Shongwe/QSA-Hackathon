@@ -89,7 +89,6 @@ function App() {
   // Get state and actions from the ticket store
   const { isLoading, error, ticketResponse, submitQuery, resetResponse } = useTicketStore();
 
-  console.log('Ticket Response:', ticketResponse);
 
   // Quirk: rotating placeholder
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
@@ -153,7 +152,7 @@ function App() {
         animate="visible"
         variants={heroVariants}
       >
-        <h1 className="hero-title">What do you want to know?</h1>
+        <h1 className="hero-title">What do you <i>want</i> to know?</h1>
         
         <form onSubmit={handleSearch} className="search-form">
           <div className="input-container">
